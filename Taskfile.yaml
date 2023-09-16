@@ -1,0 +1,27 @@
+version: "3"
+
+tasks:
+  install:
+    desc: Configure python virtual environment.
+    vars:
+      PYTHON_VERSION: 3.11
+    cmds:
+      - pyenv install {{.PYTHON_VERSION}} --skip-existing
+      - pyenv local {{.PYTHON_VERSION}}
+      - poetry env use {{.PYTHON_VERSION}}
+      - poetry install
+      - poetry run pre-commit install
+      - poetry run pre-commit install --hook-type commit-msg
+
+  upgrade:
+    desc: Upgrade versions.
+    cmds:
+      - poetry update
+      - poetry run pre-commit autoupdate
+
+  lint:
+    desc: Lint and format all files.
+    cmds:
+      - poetry run black .
+      - poetry run ruff .
+      - poetry run pre-commit run terraform_fmt --all-files

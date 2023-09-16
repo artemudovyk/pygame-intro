@@ -1,0 +1,33 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: detect-aws-credentials
+        args: ["--allow-missing-credentials"]
+        exclude: ^\.github/workflows/
+      - id: detect-private-key
+      - id: debug-statements
+      - id: check-added-large-files
+        args: ["--maxkb=10240"]
+      - id: check-ast
+      - id: check-docstring-first
+
+  - repo: https://github.com/psf/black
+    rev: 23.9.1
+    hooks:
+      - id: black
+        language: python
+        language_version: python3.11
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: "v0.0.290"
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: 3.9.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
