@@ -1,10 +1,13 @@
 import sys
+from pathlib import Path
 
 import pygame
 
 import settings
 
 pygame.init()
+
+CURRENT_DIR = Path(__file__).parent.resolve()
 
 # Create the screen
 screen = pygame.display.set_mode(size=(settings.WINDOW_WIDTH, settings.WINDOW_HEIGHT))
@@ -13,12 +16,24 @@ pygame.display.set_caption(settings.GAME_NAME)
 # Init the clock
 clock = pygame.time.Clock()
 
-test_font = pygame.font.Font("./assets/fonts/Pixeltype.ttf", 50)
+test_font = pygame.font.Font(CURRENT_DIR / "./assets/fonts/Pixeltype.ttf", 50)
 
 # Create surfaces
-sky_surface = pygame.image.load("./assets/images/sky.png")
-ground_surface = pygame.image.load("./assets/images/ground.png")
-score_surface = test_font.render("My Game", False, "black")
+sky_surf = pygame.image.load(CURRENT_DIR / "./assets/images/sky.png").convert()
+ground_surf = pygame.image.load(CURRENT_DIR / "./assets/images/ground.png").convert()
+
+score_surf = test_font.render("My Game", False, "black")
+score_rect = score_surf.get_rect(center=(int(settings.WINDOW_WIDTH / 2), 50))
+
+snail_surf = pygame.image.load(
+    CURRENT_DIR / "./assets/images/snail/snail_1.png",
+).convert_alpha()
+snail_rect = snail_surf.get_rect(midbottom=(600, 300))
+
+player_surf = pygame.image.load(
+    CURRENT_DIR / "./assets/images/player/player_walk_1.png",
+).convert_alpha()
+player_rect = player_surf.get_rect(midbottom=(80, 300))
 
 while True:
     # Handle events
@@ -26,10 +41,30 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        # if event.type == pygame.MOUSEMOTION and player_rect.collidepoint(event.pos):
+        #     print("Collision!")
 
-    screen.blit(sky_surface, dest=(0, 0))
-    screen.blit(ground_surface, dest=(0, 300))
-    screen.blit(score_surface, dest=(350, 50))
+    # Draw the screen
+    screen.blit(sky_surf, dest=(0, 0))
+    screen.blit(ground_surf, dest=(0, 300))
+    screen.blit(score_surf, score_rect)
+
+    # Move snail
+    snail_rect.left -= 4
+    if snail_rect.right <= 0:  # noqa: PLR2004
+        snail_rect.left = 800
+    screen.blit(snail_surf, snail_rect)
+
+    # Place player
+    screen.blit(player_surf, player_rect)
+
+    # Detect collision between player and snail
+    # if player_rect.colliderect(snail_rect):
+    #     print("Collision!")
+
+    # mouse_pos = pygame.mouse.get_pos()
+    # if player_rect.collidepoint(mouse_pos):
+    #     print("Collision!")
 
     # Update the screen
     pygame.display.update()
